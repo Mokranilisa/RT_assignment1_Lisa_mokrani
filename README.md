@@ -21,7 +21,7 @@ Follow these steps to install and set up the project:
 4. **Source the workspace**:
     ```bash
     source devel/setup.bash
-```
+    ```
 
 ## Running the Simulation
 
@@ -117,6 +117,7 @@ Start
     Publish the distance
 End
 ```
+
 ## Troubleshooting
 
 If you face issues with spawning or controlling turtles, ensure the following:
