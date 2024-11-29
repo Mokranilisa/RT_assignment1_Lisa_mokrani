@@ -33,7 +33,7 @@ Follow these steps to install and set up the project:
     ```
 2. Run the script to spawn and control the turtles:
     ```bash
-    python node1.py
+    rosrun <package_name>  node1.py
     ```
 3. You will see a menu with options:
     - **1**: Spawn `turtle2`.
@@ -55,7 +55,7 @@ rosrun <package_name> node1
 #### Python Implementations
 1. Run the second script to monitor the distance and boundaries:
     ```bash
-    python node2.py
+    rosrun <package_name>  node2.py
     ```
 2. This node will continuously check the distance between `turtle1` and `turtle2`. If the turtles get too close or approach the boundary, they will stop automatically.
 
