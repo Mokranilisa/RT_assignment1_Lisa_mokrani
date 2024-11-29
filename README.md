@@ -11,7 +11,7 @@ Follow these steps to install and set up the project:
 1. **Install ROS**: Follow the official [ROS installation guide](https://www.ros.org/install/).
 2. **Clone the repository**:
     ```bash
-    git clone https://github.com/Mokranilisa/assignment1_rt/tree/main
+    git clone https://github.com/Mokranilisa/RT_assignment1_Lisa_mokrani
     ```
 3. **Build the workspace**:
     ```bash
