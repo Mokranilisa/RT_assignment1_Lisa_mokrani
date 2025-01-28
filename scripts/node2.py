@@ -3,17 +3,19 @@
 import rospy
 from turtlesim.msg import Pose
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Float64MultiArray
 import math
 
-# Global variables for positions
+# Global variables for positions and obstacles
 turtle1_pose = None
 turtle2_pose = None
+obstacle_data = []
 
 # Thresholds
 DISTANCE_THRESHOLD = 1.0
 BOUNDARY_LIMIT = 1.0
 MAX_BOUNDARY = 10.0
+OBSTACLE_THRESHOLD = 1.5  # Minimum distance to an obstacle
 
 # Callback for turtle1 pose updates
 def turtle1_pose_callback(msg):
@@ -24,6 +26,11 @@ def turtle1_pose_callback(msg):
 def turtle2_pose_callback(msg):
     global turtle2_pose
     turtle2_pose = msg
+
+# Callback for obstacle data
+def obstacle_callback(msg):
+    global obstacle_data
+    obstacle_data = msg.data  # Array of 16 doubles representing obstacle distances
 
 # Calculate the distance between turtle1 and turtle2
 def calculate_distance():
@@ -40,6 +47,13 @@ def stop_turtle(turtle_name):
     pub.publish(stop_msg)
     rospy.loginfo(f"{turtle_name} has been stopped.")
 
+# Check for obstacles around the turtle
+def check_obstacles():
+    global obstacle_data
+    if not obstacle_data:
+        return False
+    return any(dist < OBSTACLE_THRESHOLD for dist in obstacle_data)
+
 # Wait for turtle2 to be available
 def wait_for_turtle2():
     rospy.loginfo("Waiting for turtle2 to be spawned...")
@@ -53,12 +67,13 @@ def wait_for_turtle2():
 # Main function
 def main():
     rospy.init_node('node2', anonymous=True)
-    rospy.loginfo("Node 2 (Distance Checker) Started")
+    rospy.loginfo("Node 2 (Distance and Obstacle Checker) Started")
 
     wait_for_turtle2()
 
     rospy.Subscriber('/turtle1/pose', Pose, turtle1_pose_callback)
     rospy.Subscriber('/turtle2/pose', Pose, turtle2_pose_callback)
+    rospy.Subscriber('/obstacles', Float64MultiArray, obstacle_callback)
     distance_pub = rospy.Publisher('/turtle_distance', Float32, queue_size=10)
 
     rate = rospy.Rate(10)  # 10 Hz
@@ -87,9 +102,16 @@ def main():
                 rospy.logwarn("Turtle2 near boundary! Stopping.")
                 stop_turtle('turtle2')
 
+            # Check obstacles for both turtles
+            if check_obstacles():
+                rospy.logwarn("Obstacle detected! Stopping turtles.")
+                stop_turtle('turtle1')
+                stop_turtle('turtle2')
+
         rate.sleep()
 
 if __name__ == "__main__":
     main()
+
 
 
